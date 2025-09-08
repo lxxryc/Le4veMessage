@@ -77,7 +77,8 @@
       background: linear-gradient(0deg, #111, #222, #111, #222);
       background-size: 400% 400%;
       animation: rotateGradient 15s linear infinite;
-      overflow-y: auto; 
+      overflow-y: auto; /* ✅ allow scroll for long messages */
+      text-align: center;
     }
 
     @keyframes rotateGradient {
@@ -289,7 +290,7 @@
     </div>
   </div>
 
- 
+  <!-- About Modal -->
   <div id="aboutModal" class="modal">
     <div class="modal-content">
       <span class="close" data-close="aboutModal">&times;</span>
@@ -298,7 +299,7 @@
     </div>
   </div>
 
-
+  <!-- Contact Modal -->
   <div id="contactModal" class="modal">
     <div class="modal-content">
       <span class="close" data-close="contactModal">&times;</span>
@@ -337,7 +338,7 @@
     const UNIQUE_KEY = "msg_" + hashString(SECRET_MESSAGE);
 
     function showDestroyed() {
-      countdownTextEl.style.display = "none";
+      countdownTextEl.style.display = "none"; // ✅ hide whole countdown
       messageEl.textContent = "";
       statusEl.textContent = SELF_DESTRUCT_TEXT;
       const afterEl = document.createElement('span');
@@ -363,7 +364,7 @@
       }, 1000);
     }
 
-  
+    // ----- Modal Handling -----
     const modals = {
       faqBtn: 'faqModal',
       aboutBtn: 'aboutModal',
@@ -386,7 +387,7 @@
       }
     });
 
-    
+    // ----- Form Handling -----
     const form = document.querySelector("form");
     const resultEl = document.getElementById("formResult");
 
@@ -415,7 +416,7 @@
       }
     });
 
-  
+    // ----- FAQ Expand/Collapse -----
     document.querySelectorAll(".faq-question").forEach(question => {
       question.addEventListener("click", () => {
         const item = question.parentElement;
@@ -442,7 +443,3 @@
   </script>
 </body>
 </html>
-
-
-
-
