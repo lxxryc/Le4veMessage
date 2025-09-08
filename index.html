@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Le4veMessage</title>
+  <style>
+    * { box-sizing: border-box; margin:0; padding:0; }
+    html, body {
+      height: 100%;
+      width: 100%;
+      font-family: Tahoma, sans-serif;
+      background: #000;
+      color: #fff;
+      overflow-x: hidden;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      padding: 2vh 2vw;
+    }
+
+    nav {
+      width: 100%;
+      background: #111;
+      display: flex;
+      justify-content: center;
+      gap: 2vw;
+      padding: 1vh 0;
+      border-radius: 8px;
+      margin-bottom: 2vh;
+    }
+    nav a {
+      color: #fff;
+      text-decoration: none;
+      font-weight: bold;
+      font-size: clamp(14px, 1.8vw, 16px);
+      transition: 0.3s;
+      cursor: pointer;
+    }
+    nav a:hover { color: #ff0; }
+
+    h1 {
+      font-size: clamp(32px, 6vw, 60px);
+      color: #fff;
+      text-shadow: 0 0 6px #fff;
+      margin-bottom: 1vh;
+      text-align: center;
+    }
+
+    #countdownText {
+      font-size: clamp(14px, 2vw, 18px);
+      font-weight: bold;
+      text-align: center;
+      margin: 1vh 0 2vh 0;
+      color: #ff0000;
+      animation: countdownFlash 1s infinite;
+    }
+
+    @keyframes countdownFlash {
+      0%, 50%, 100% { color: #ff0000; }
+      25%, 75% { color: #880000; }
+    }
+
+    #messageBox {
+      width: 90vw;
+      max-width: 500px;
+      min-height: 100px;
+      border-radius: 12px;
+      padding: 1.5vh 1vw;
+      display: flex;
+      align-items: flex-start;
+      justify-content: flex-start;
+      margin-bottom: 1vh;
+      color: #fff;
+      font-weight: bold;
+      background: linear-gradient(0deg, #111, #222, #111, #222);
+      background-size: 400% 400%;
+      animation: rotateGradient 15s linear infinite;
+      overflow-y: auto; /* ✅ allow scroll for long messages */
+      text-align: center;
+    }
+
+    @keyframes rotateGradient {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    #message {
+      font-size: clamp(14px, 1.6vw, 18px);
+      line-height: 1.5;
+      word-wrap: break-word;
+      width: 100%;
+    }
+
+    #status {
+      font-size: clamp(16px, 2vw, 20px);
+      color: #fff;
+      font-weight: bold;
+      text-align: center;
+      margin: 0.5vh 0 2vh 0;
+    }
+
+    .after-text {
+      color: #fff;
+      display: block;
+      margin-top: 1vh;
+      font-size: clamp(14px, 1.8vw, 16px);
+      text-align: center;
+    }
+
+    form {
+      width: 90vw;
+      max-width: 500px;
+      background: #111;
+      padding: 1.5vh 2vw;
+      border-radius: 12px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      margin-bottom: 1vh;
+    }
+
+    form h2 {
+      text-align: center;
+      color: #fff;
+      font-size: clamp(18px, 3vw, 22px);
+      margin-bottom: 1.5vh;
+    }
+
+    label {
+      font-size: clamp(13px, 1.8vw, 15px);
+      color: #ccc;
+      margin: 0.5vh 0;
+    }
+
+    input, textarea {
+      width: 100%;
+      padding: 0.8vh 1vw;
+      margin-bottom: 1vh;
+      border-radius: 10px;
+      border: 1px solid #555;
+      font-size: clamp(13px, 1.8vw, 15px);
+      background: #000;
+      color: #fff;
+      resize: none;
+    }
+
+    button {
+      padding: 1vh 1vw;
+      font-size: clamp(13px, 1.8vw, 15px);
+      font-weight: bold;
+      background: #fff;
+      color: #000;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: 0.3s;
+      margin-top: 1vh;
+    }
+    button:hover { background: #ccc; }
+
+    .form-result {
+      text-align: center;
+      margin-top: 1vh;
+      font-size: 0.9em;
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 999;
+      left: 0; top: 0;
+      width: 100%; height: 100%;
+      overflow: auto;
+      background-color: rgba(0,0,0,0.9);
+      padding-top: 5vh;
+    }
+    .modal-content {
+      background-color: #111;
+      margin: auto;
+      padding: 2vh 2vw;
+      border: 1px solid #888;
+      width: 90%;
+      max-width: 600px;
+      border-radius: 12px;
+      color: #fff;
+      animation: fadeIn 0.3s ease;
+      max-height: 80vh;
+      overflow-y: auto;
+    }
+    @keyframes fadeIn {
+      from {opacity:0;}
+      to {opacity:1;}
+    }
+    .close {
+      color: #ff0;
+      float: right;
+      font-size: 28px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    /* FAQ Styling */
+    .faq-list { margin-top: 1vh; }
+    .faq-item { border-bottom: 1px solid #333; padding: 1vh 0; }
+    .faq-question {
+      cursor: pointer;
+      font-weight: bold;
+      font-size: 1.1em;
+      padding: 0.5vh 0;
+      transition: color 0.3s;
+    }
+    .faq-question:hover { color: #ff0; }
+    .faq-answer {
+      max-height: 0;
+      overflow: hidden;
+      color: #ccc;
+      font-size: 0.95em;
+      line-height: 1.4;
+      transition: max-height 0.35s ease-in-out, padding 0.35s ease-in-out;
+      padding: 0 0;
+    }
+    .faq-item.active .faq-answer {
+      padding: 0.8vh 0;
+      max-height: 1000px;
+    }
+
+    footer {
+      margin-top: 10px;
+      padding: 1vh 0;
+      text-align: center;
+      font-size: 0.6em;
+      color: #888;
+    }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <a id="faqBtn">FAQ</a>
+    <a id="aboutBtn">About</a>
+    <a id="contactBtn">Contact</a>
+  </nav>
+
+  <h1>Le4veMessage</h1>
+
+  <p id="countdownText">
+    This message will self-destruct in <span id="countdown"></span> seconds…
+  </p>
+
+  <div id="messageBox">
+    <p id="message"></p>
+  </div>
+
+  <p id="status"></p>
+
+  <form action="https://formspree.io/f/xpwjkayd" method="POST">
+    <h2>Send a message</h2>
+    <label for="identity">Name / FB / IG:</label>
+    <input type="text" id="identity" name="identity" placeholder="(optional)">
+    
+    <label for="messageInput">Your Message:</label>
+    <textarea id="messageInput" name="message" rows="4" required placeholder="Type your message here..."></textarea>
+
+    <button type="submit">Send</button>
+    <div class="form-result" id="formResult"></div>
+  </form>
+
+  <!-- FAQ Modal -->
+  <div id="faqModal" class="modal">
+    <div class="modal-content">
+      <span class="close" data-close="faqModal">&times;</span>
+      <h2>FAQ</h2>
+      <div class="faq-list">
+        <div class="faq-item">
+          <div class="faq-question">Am I truly anonymous when sending a message?</div>
+          <div class="faq-answer">Yes, unless you add your identity voluntarily.</div>
+        </div>
+        <div class="faq-item">
+          <div class="faq-question">Can anyone see the message I send?</div>
+          <div class="faq-answer">Only the recipient and developer during delivery.</div>
+        </div>
+        <div class="faq-item">
+          <div class="faq-question">Is the message permanently deleted?</div>
+          <div class="faq-answer">It self-destructs per device, but developer is improving privacy further.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- About Modal -->
+  <div id="aboutModal" class="modal">
+    <div class="modal-content">
+      <span class="close" data-close="aboutModal">&times;</span>
+      <h2>About</h2>
+      <p>Le4veMeMessage is a minimalist self-destructing message web with anonymous message sending.</p>
+    </div>
+  </div>
+
+  <!-- Contact Modal -->
+  <div id="contactModal" class="modal">
+    <div class="modal-content">
+      <span class="close" data-close="contactModal">&times;</span>
+      <h2>Contact</h2>
+      <p>Email: <a href="mailto:lxx.ryc@gmail.com" style="color:#ff0;">lxx.ryc@gmail.com</a></p>
+      <p>Facebook: <a href="https://www.facebook.com/share/17KsNyhQ4s/" style="color:#ff0;">facebook.com</a></p>
+      <p>Instagram: <a href="https://www.instagram.com/lxxryc?igsh=MWhlaWZvMWhnNnlqZQ==" style="color:#ff0;">instagram.com</a></p>
+    </div>
+  </div>
+
+  <footer>
+    <p>© 2025 Le4veMeMessage — Created by <strong>Louís Ryc</strong></p>
+  </footer>
+
+  <script>
+    const DURATION_SECONDS = 10;
+    const SECRET_MESSAGE = "his wifee";
+    const SELF_DESTRUCT_TEXT = "Message destroyed!";
+    const AFTER_TEXT = "Source: unknown";
+
+    const countdownTextEl = document.getElementById("countdownText");
+    const countdownEl = document.getElementById("countdown");
+    const messageEl = document.getElementById("message");
+    const statusEl = document.getElementById("status");
+
+    function hashString(str) {
+      let h = 0x811c9dc5;
+      for (const ch of str) {
+        h ^= ch.codePointAt(0);
+        h += (h << 1) + (h << 4) + (h << 7) + (h << 8) + (h << 24);
+        h >>>= 0;
+      }
+      return ("00000000" + h.toString(16)).slice(-8);
+    }
+
+    const UNIQUE_KEY = "msg_" + hashString(SECRET_MESSAGE);
+
+    function showDestroyed() {
+      countdownTextEl.style.display = "none"; // ✅ hide whole countdown
+      messageEl.textContent = "";
+      statusEl.textContent = SELF_DESTRUCT_TEXT;
+      const afterEl = document.createElement('span');
+      afterEl.className = 'after-text';
+      afterEl.textContent = AFTER_TEXT;
+      statusEl.appendChild(afterEl);
+    }
+
+    if (localStorage.getItem(UNIQUE_KEY) === "true") {
+      showDestroyed();
+    } else {
+      messageEl.textContent = SECRET_MESSAGE;
+      let remaining = DURATION_SECONDS;
+      countdownEl.textContent = remaining;
+      const timer = setInterval(() => {
+        remaining--;
+        countdownEl.textContent = remaining;
+        if (remaining <= 0) {
+          clearInterval(timer);
+          localStorage.setItem(UNIQUE_KEY, "true");
+          showDestroyed();
+        }
+      }, 1000);
+    }
+
+    // ----- Modal Handling -----
+    const modals = {
+      faqBtn: 'faqModal',
+      aboutBtn: 'aboutModal',
+      contactBtn: 'contactModal'
+    };
+    Object.keys(modals).forEach(btnId => {
+      document.getElementById(btnId).addEventListener('click', () => {
+        document.getElementById(modals[btnId]).style.display = 'block';
+      });
+    });
+    document.querySelectorAll('.close').forEach(span => {
+      span.addEventListener('click', () => {
+        const modalId = span.getAttribute('data-close');
+        document.getElementById(modalId).style.display = 'none';
+      });
+    });
+    window.addEventListener('click', (e) => {
+      if(e.target.classList.contains('modal')) {
+        e.target.style.display = 'none';
+      }
+    });
+
+    // ----- Form Handling -----
+    const form = document.querySelector("form");
+    const resultEl = document.getElementById("formResult");
+
+    form.addEventListener("submit", async function(e) {
+      e.preventDefault();
+      const formData = new FormData(form);
+
+      try {
+        const response = await fetch(form.action, {
+          method: "POST",
+          body: formData,
+          headers: { 'Accept': 'application/json' }
+        });
+
+        if (response.ok) {
+          resultEl.style.color = "#0f0";
+          resultEl.textContent = "Message sent successfully!";
+          form.reset();
+        } else {
+          resultEl.style.color = "red";
+          resultEl.textContent = "Oops! Something went wrong.";
+        }
+      } catch (error) {
+        resultEl.style.color = "red";
+        resultEl.textContent = "Oops! Something went wrong.";
+      }
+    });
+
+    // ----- FAQ Expand/Collapse -----
+    document.querySelectorAll(".faq-question").forEach(question => {
+      question.addEventListener("click", () => {
+        const item = question.parentElement;
+        const answer = item.querySelector(".faq-answer");
+
+        if (item.classList.contains("active")) {
+          answer.style.maxHeight = answer.scrollHeight + "px";
+          requestAnimationFrame(() => {
+            answer.style.maxHeight = "0px";
+          });
+          item.classList.remove("active");
+        } else {
+          answer.style.maxHeight = answer.scrollHeight + "px";
+          item.classList.add("active");
+          answer.addEventListener("transitionend", function handler() {
+            if (item.classList.contains("active")) {
+              answer.style.maxHeight = "none";
+            }
+            answer.removeEventListener("transitionend", handler);
+          });
+        }
+      });
+    });
+  </script>
+</body>
+</html>
